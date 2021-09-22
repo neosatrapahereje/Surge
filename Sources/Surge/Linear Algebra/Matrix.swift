@@ -59,7 +59,8 @@ public struct Matrix<Scalar: Codable>: Codable where Scalar: FloatingPoint, Scal
     public let rows: Int
     public let columns: Int
 
-    var grid: [Scalar]
+    // This seems somehow necessary
+    public var grid: [Scalar]
 
     public var shape: Shape {
         if self.rows > self.columns {
@@ -469,6 +470,97 @@ func withMatrix<Scalar>(from matrix: Matrix<Scalar>, _ closure: (inout Matrix<Sc
     return copy
 }
 
+// MARK: - Maximum
+public func max(_ lhs: Matrix<Double>, axies: MatrixAxies = .column) -> Matrix<Double> {
+    switch axies {
+    case .column:
+        var result: Matrix<Double> = Matrix<Double>(rows: 1, columns: lhs.columns, repeatedValue: Double(0))
+        for column in 0..<lhs.columns {
+            result[0, column] = max(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Matrix<Double> = Matrix<Double>(rows: lhs.rows, columns: 1, repeatedValue: Double(0))
+        for row in 0..<lhs.rows {
+            result[row, 0] = max(lhs[row: row])
+        }
+        return result
+    }
+}
+
+public func max(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Matrix<Float> {
+    switch axies {
+    case .column:
+        var result: Matrix<Float> = Matrix<Float>(rows: 1, columns: lhs.columns, repeatedValue: Float(0))
+        for column in 0..<lhs.columns {
+            result[0, column] = max(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Matrix<Float> = Matrix<Float>(rows: lhs.rows, columns: 1, repeatedValue: Float(0))
+        for row in 0..<lhs.rows {
+            result[row, 0] = max(lhs[row: row])
+        }
+        return result
+    }
+}
+
+public func max(_ lhs: Matrix<Double>) -> Double {
+    return max(lhs.grid)
+}
+
+public func max(_ lhs: Matrix<Float>) -> Float {
+    return max(lhs.grid)
+}
+
+// MARK: - Minimum
+public func min(_ lhs: Matrix<Double>, axies: MatrixAxies = .column) -> Array<Double> {
+    switch axies {
+    case .column:
+        var result: Array<Double> = Array<Double>(repeating: Double(0), count: lhs.columns)
+        for column in 0..<lhs.columns {
+            result[column] = min(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Array<Double> = Array<Double>(repeating: Double(0), count: lhs.rows)
+        for row in 0..<lhs.rows {
+            result[row] = min(lhs[row: row])
+        }
+        return result
+    }
+}
+
+
+public func min(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Array<Float> {
+    switch axies {
+    case .column:
+        var result: Array<Float> = Array<Float>(repeating: Float(0), count: lhs.columns)
+        for column in 0..<lhs.columns {
+            result[column] = min(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Array<Float> = Array<Float>(repeating: Float(0), count: lhs.rows)
+        for row in 0..<lhs.rows {
+            result[row] = min(lhs[row: row])
+        }
+        return result
+    }
+}
+
+public func min(_ lhs: Matrix<Double>) -> Double {
+    return min(lhs.grid)
+}
+
+public func min(_ lhs: Matrix<Float>) -> Float {
+    return min(lhs.grid)
+}
+
 // MARK: - Addition
 
 public func add(_ lhs: Matrix<Float>, _ rhs: Matrix<Float>) -> Matrix<Float> {
@@ -761,7 +853,7 @@ public func sum(_ lhs: Matrix<Double>, axies: MatrixAxies = .column) -> Matrix<D
 public func sum(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Matrix<Float> {
     switch axies {
     case .column:
-        var result = Matrix<Float>(rows: 1, columns: lhs.columns, repeatedValue: 0.0)
+        var result: Matrix<Float> = Matrix<Float>(rows: 1, columns: lhs.columns, repeatedValue: Float(0))
         for i in 0..<lhs.columns {
             result.grid[i] = sum(lhs[column: i])
         }
@@ -773,6 +865,91 @@ public func sum(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Matrix<Fl
         }
         return result
     }
+}
+
+public func sum(_ lhs: Matrix<Double>) -> Double {
+    let result: Double = sum(lhs.grid)
+    return result
+}
+
+public func sum(_ lhs: Matrix<Float>) -> Float {
+    let result: Float = sum(lhs.grid)
+    return result
+}
+
+// MARK: - Absolute Value
+public func abs(_ lhs: Matrix<Float>) -> Matrix<Float> {
+    let absGrid = withArray(from: lhs.grid) { absInPlace(&$0) }
+    let absMatrix = Matrix<Float>(rows: lhs.rows, columns: lhs.columns, grid: absGrid)
+    return absMatrix
+}
+
+public func abs(_ lhs: Matrix<Double>) -> Matrix<Double> {
+    let absGrid = withArray(from: lhs.grid) { absInPlace(&$0) }
+    let absMatrix = Matrix<Double>(rows: lhs.rows, columns: lhs.columns, grid: absGrid)
+    return absMatrix
+}
+
+// MARK: - Mean Value
+
+public func mean(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Matrix<Float> {
+    switch axies {
+    case .column:
+        var result: Matrix<Float> = Matrix<Float>(rows: 1, columns: lhs.columns, repeatedValue: Float(0))
+        for i in 0..<lhs.columns {
+            result[0, i] = mean(lhs[column: i])
+        }
+        return result
+    case .row:
+        var result: Matrix<Float> = Matrix<Float>(rows: lhs.rows, columns: 1, repeatedValue: Float(0))
+        for i in 0..<lhs.rows {
+            result[i, 0] = mean(lhs[row: i])
+        }
+        return result
+    }
+}
+
+public func mean(_ lhs: Matrix<Double>, axies: MatrixAxies = .column) -> Matrix<Double> {
+    switch axies {
+    case .column:
+        var result: Matrix<Double> = Matrix<Double>(rows: 1, columns: lhs.columns, repeatedValue: Double(0))
+        for i in 0..<lhs.columns {
+            result[0, i] = mean(lhs[column: i])
+        }
+        return result
+    case .row:
+        var result: Matrix<Double> = Matrix<Double>(rows: lhs.rows, columns: 1, repeatedValue: Double(0))
+        for i in 0..<lhs.rows {
+            result[i, 0] = mean(lhs[row: i])
+        }
+        return result
+    }
+}
+
+public func mean(_ lhs: Matrix<Float>) -> Float {
+    return mean(lhs.grid)
+}
+
+public func mean(_ lhs: Matrix<Double>) -> Double {
+    return mean(lhs.grid)
+}
+
+// MARK: - Variance
+
+public func variance(_ lhs: Matrix<Float>, axies: MatrixAxies = .column) -> Matrix<Float> {
+    return axisWiseFunc(lhs, axies: axies, function: variance)
+}
+
+public func variance(_ lhs: Matrix<Double>, axies: MatrixAxies = .column) -> Matrix<Double> {
+    return axisWiseFunc(lhs, axies: axies, function: variance)
+}
+
+public func variance(_ lhs: Matrix<Float>) -> Float {
+    return variance(lhs.grid)
+}
+
+public func variance(_ lhs: Matrix<Double>) -> Double {
+    return variance(lhs.grid)
 }
 
 // MARK: - Inverse
@@ -1002,4 +1179,43 @@ public func eigenDecompose(_ lhs: Matrix<Double>) throws -> MatrixEigenDecomposi
     }
 
     return MatrixEigenDecompositionResult<Double>(rowCount: lhs.rows, eigenValueRealParts: eigenValueRealParts, eigenValueImaginaryParts: eigenValueImaginaryParts, leftEigenVectorWork: leftEigenVectorWork, rightEigenVectorWork: rightEigenVectorWork)
+}
+
+
+func axisWiseFunc(_ lhs: Matrix<Float>, axies: MatrixAxies,
+                  function: (Array<Float>) -> Float) -> Matrix<Float> {
+    switch axies {
+    case .column:
+        var result: Matrix<Float> = Matrix<Float>(rows: 1, columns: lhs.columns, repeatedValue: Float(0))
+        for column in 0..<lhs.columns {
+            result[0, column] = function(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Matrix<Float> = Matrix<Float>(rows: lhs.rows, columns: 1, repeatedValue: Float(0))
+        for row in 0..<lhs.rows {
+            result[row, 0] = function(lhs[row: row])
+        }
+        return result
+    }
+}
+
+func axisWiseFunc(_ lhs: Matrix<Double>, axies: MatrixAxies,
+                  function: (Array<Double>) -> Double) -> Matrix<Double> {
+    switch axies {
+    case .column:
+        var result: Matrix<Double> = Matrix<Double>(rows: 1, columns: lhs.columns, repeatedValue: Double(0))
+        for column in 0..<lhs.columns {
+            result[0, column] = function(lhs[column: column])
+        }
+        return result
+
+    case .row:
+        var result: Matrix<Double> = Matrix<Double>(rows: lhs.rows, columns: 1, repeatedValue: Double(0))
+        for row in 0..<lhs.rows {
+            result[row, 0] = function(lhs[row: row])
+        }
+        return result
+    }
 }
