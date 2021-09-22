@@ -1167,7 +1167,7 @@ class MatrixTests: XCTestCase {
     }
 
     func test_matrix_codec() {
-        let matrix = Matrix<Float>([[1.0], [2.0], [3.0], [4.0]])
+        let matrix = Matrix<Float>([[1.0, 9.2], [2.0, 8.7], [3.0, 2.5], [4.0, 29.9]])
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(matrix) {
             let decoder = JSONDecoder()
