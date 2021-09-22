@@ -25,7 +25,7 @@ public enum MatrixAxies {
     case column
 }
 
-public struct Matrix<Scalar> where Scalar: FloatingPoint, Scalar: ExpressibleByFloatLiteral {
+public struct Matrix<Scalar: Codable>: Codable where Scalar: FloatingPoint, Scalar: ExpressibleByFloatLiteral {
     public enum Shape: Equatable {
         // `self.rows < self.columns` (aka. `m < n`)
         case wide
@@ -33,6 +33,27 @@ public struct Matrix<Scalar> where Scalar: FloatingPoint, Scalar: ExpressibleByF
         case tall
         // `self.rows == self.columns` (aka. `m == n`)
         case square
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case rows
+        case columns
+        case grid
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        self.rows = try values.decode(Int.self, forKey: .rows)
+        self.columns = try values.decode(Int.self, forKey: .columns)
+        self.grid = try values.decode(Array<Scalar>.self, forKey: .grid)
+    }
+    public func encode(from encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rows, forKey: .rows)
+        try container.encode(self.columns, forKey: .columns)
+        let rData = Data(bytes: self.grid,
+                         count: self.grid.count * MemoryLayout<Scalar>.stride)
+        try container.encode(rData, forKey: .grid)
     }
 
     public let rows: Int
