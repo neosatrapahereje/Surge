@@ -1165,4 +1165,17 @@ class MatrixTests: XCTestCase {
             XCTAssertEqual(e as? EigenDecompositionError, EigenDecompositionError.matrixNotSquare)
         }
     }
+
+    func test_matrix_codec() {
+        let matrix = Matrix<Float>([[1.0], [2.0], [3.0], [4.0]])
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(matrix) {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode(Matrix<Float>.self, from: encoded) {
+                XCTAssertEqual(matrix, decoded)
+            } else {
+                XCTAssertEqual(true, false)
+            }
+        }
+    }
 }
